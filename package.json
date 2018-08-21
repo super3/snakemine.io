@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ovsoinc/snake/issues"
   },
-  "homepage": "https://github.com/ovsoinc/snake#readme"
+  "homepage": "https://github.com/ovsoinc/snake#readme",
+  "dependencies": {
+    "socket.io": "^2.1.1"
+  }
 }

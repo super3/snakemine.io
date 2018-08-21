@@ -1,41 +1,86 @@
 <html>
-<body>
-	<canvas id="canvas"></canvas>
-</body>
-<script>
-const canvas = document.getElementById("canvas");
+	<body>
+		<canvas id="canvas"></canvas>
 
-const canvasSize = canvas.width = canvas.height = 500;
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
-const context = canvas.getContext("2d");
+		<script>
+		const socket = io(`${location.origin}:3055`);
+		const canvas = document.getElementById("canvas");
 
-const canvasBox = 10;
-const boxSize = canvasSize / canvasBox;
+		const canvasSize = canvas.width = canvas.height = 500;
 
-const backgroundColor = 'A2D149';
-const foregroundColor = 'AAD751';
-const snakeColor = '4876EC';
+		const context = canvas.getContext("2d");
 
-const grid = [];
+		const canvasBox = 10;
+		const boxSize = canvasSize / canvasBox;
 
-for(let i = 0; i < canvasBox; i++) {
-	grid[i] = [];
+		const backgroundColor = 'A2D149';
+		const foregroundColor = 'AAD751';
+		const snakeColor = '4876EC';
+		const userSnakeColor = '222';
 
-	for(let j = 0; j < canvasBox; j++) {
-		grid[i][j] = backgroundColor;
-		if (j % 2 && !(i % 2)) { grid[i][j] = foregroundColor;}
-		if (!(j % 2) && (i % 2)) { grid[i][j] = foregroundColor;}
-	}
-}
+		function buildGrid(snakes) {
+			const grid = [];
 
-setInterval(() => {
-	for(const r in grid) {
-		for(const c in grid[r]) {
-			context.fillStyle = `#${grid[r][c].toUpperCase()}`;
-			context.fillRect(boxSize * c, boxSize * r, boxSize, boxSize);
-			context.stroke();
+			context.clearRect(0, 0, canvas.width, canvas.height);
+
+			for(let i = 0; i < canvasBox; i++) {
+				grid[i] = [];
+
+				for(let j = 0; j < canvasBox; j++) {
+					grid[i][j] = (j % 2 && !(i % 2)) || (!(j % 2) && (i % 2)) ? backgroundColor : foregroundColor;
+				}
+			}
+
+			for(const snake of snakes) {
+				console.log(snake.local);
+
+				grid[snake.x][snake.y] = snake.local == true ? userSnakeColor : snakeColor;
+			}
+
+			return grid;
 		}
-	}
-}, 1000 / 2);
-</script>
+
+		function renderGrid(grid) {
+			for(const r in grid) {
+				for(const c in grid[r]) {
+					context.fillStyle = `#${grid[r][c].toUpperCase()}`;
+					context.fillRect(boxSize * c, boxSize * r, boxSize, boxSize);
+					context.stroke();
+				}
+			}
+		}
+
+		document.addEventListener('keydown', event => {
+			const keys = {
+				37: 'left',
+				38: 'up',
+				39: 'right',
+				40: 'down'
+			};
+
+			if(event.keyCode in keys) {
+				socket.emit('direction', keys[event.keyCode]);
+			}
+		});
+
+		let snakeId = 0;
+
+		socket.on('snakeId', _snakeId => {
+			console.log(_snakeId);
+			snakeId = _snakeId;
+		});
+
+		socket.on('snakes', snakes => {
+			for(const snake of snakes) {
+				if(snake.id === snakeId)
+					snake.local = true;
+			}
+
+			const grid = buildGrid(snakes);
+			renderGrid(grid);
+		});
+		</script>
+	</body>
 </html>
