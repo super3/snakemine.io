@@ -1,0 +1,40 @@
+<html>
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+<script>
+const canvas = document.getElementById("canvas");
+
+const canvasSize = canvas.width = canvas.height = 500;
+
+const context = canvas.getContext("2d");
+
+const canvasBox = 10;
+const boxSize = canvasSize / canvasBox;
+
+const backgroundColor = 'A2D149';
+const foregroundColor = 'AAD751';
+
+const grid = [];
+
+for(let i = 0; i < canvasBox; i++) {
+	grid[i] = [];
+
+	for(let j = 0; j < canvasBox; j++) {
+		grid[i][j] = backgroundColor;
+		if (j % 2 && !(i % 2)) { grid[i][j] = foregroundColor;}
+		if (!(j % 2) && (i % 2)) { grid[i][j] = foregroundColor;}
+	}
+}
+
+setInterval(() => {
+	for(const r in grid) {
+		for(const c in grid[r]) {
+			context.fillStyle = `#${grid[r][c].toUpperCase()}`;
+			context.fillRect(boxSize * c, boxSize * r, boxSize, boxSize);
+			context.stroke();
+		}
+	}
+}, 1000 / 2);
+</script>
+</html>
