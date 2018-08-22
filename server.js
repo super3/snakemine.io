@@ -1,14 +1,14 @@
 const io = require('socket.io')(3055);
 
-const snakes = [];
+const snakes = new Set();
 let id = 0;
 
 io.on('connection', socket => {
 	const snake = {
 		blocks: [
 			{
-				x: 5,
-				y: 5,
+				x: 12,
+				y: 12,
 				direction: 'up'
 			}
 		],
@@ -17,24 +17,24 @@ io.on('connection', socket => {
 		counter: 0
 	};
 
-	snakes.push(snake);
+	snakes.add(snake);
 
 	socket.emit('snakeId', snake.id);
-	socket.emit('snakes', snakes);
+	socket.emit('snakes', [ ...snakes ]);
 
 	socket.on('direction', direction => {
 		snake.direction = direction;
 	});
 
 	socket.on('disconnect', () => {
-		snakes.splice(snakes.indexOf(snake), 1);
+		snakes.delete(snake);
 	});
 });
 
 const fps = 3.5;
 
 setInterval(() => {
-	const canvasBox = 10;
+	const canvasBox = 25;
 
 	for(const snake of snakes) {
 		if(snake.counter++ % 5 === 0) {
@@ -86,8 +86,8 @@ setInterval(() => {
 		const { x, y } = snake.blocks[0];
 
 		if(x === 0 || x === canvasBox || y === 0 || y === canvasBox)
-			snakes.splice(snake, 1);
+			snakes.delete(snake);
 	}
 
-	io.emit('snakes', snakes);
+	io.emit('snakes', [ ...snakes ]);
 }, 1000 / fps);
