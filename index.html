@@ -34,9 +34,9 @@
 			}
 
 			for(const snake of snakes) {
-				console.log(snake.local);
-
-				grid[snake.x][snake.y] = snake.local == true ? userSnakeColor : snakeColor;
+				for(const block of snake.blocks) {
+					grid[block.x][block.y] = snake.local == true ? userSnakeColor : snakeColor;
+				}
 			}
 
 			return grid;
