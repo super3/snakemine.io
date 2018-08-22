@@ -12,6 +12,7 @@ io.on('connection', socket => {
 				direction: 'up'
 			}
 		],
+		direction: 'up',
 		id: id++,
 		counter: 0
 	};
@@ -22,7 +23,7 @@ io.on('connection', socket => {
 	socket.emit('snakes', snakes);
 
 	socket.on('direction', direction => {
-		snake.blocks[0].direction = direction;
+		snake.direction = direction;
 	});
 
 	socket.on('disconnect', () => {
@@ -43,12 +44,12 @@ setInterval(() => {
 
 			const block = ({
 				'up': () => ({
-					x: lastBlock.x - 1,
+					x: lastBlock.x + 1,
 					y: lastBlock.y,
 					direction: 'up'
 				}),
 				'down': () => ({
-					x: lastBlock.x + 1,
+					x: lastBlock.x - 1,
 					y: lastBlock.y,
 					direction: 'down'
 				}),
@@ -67,41 +68,25 @@ setInterval(() => {
 			snake.blocks.push(block);
 		}
 
-		if(snake.blocks.length >= 2) {
-			(() => {
-				for(let i = 0; i < snake.blocks.length - 3; i++) {
-					const blocks = snake.blocks.slice(i, 2);
-									console.log(blocks);
-
-					if(blocks[0].direction !== blocks[1].direction) {
-						blocks[0].direction = blocks[1].direction;
-
-						return;
-					}
-				}
-			})();
+		for(let i = snake.blocks.length - 1; i >= 1; i--) {
+			snake.blocks[i].direction = snake.blocks[i - 1].direction;
 		}
+
+		snake.blocks[0].direction = snake.direction;
 
 		for(const block of snake.blocks) {
 			({
-				'up': () => {
-					if(--block.x === 0)
-						block.direction = 'down';
-				},
-				'down': () => {
-					if(++block.x === canvasBox - 1)
-						block.direction = 'up';
-				},
-				'left': () => {
-					if(--block.y === 0)
-						block.direction = 'right';
-				},
-				'right': () => {
-					if(++block.y === canvasBox - 1)
-						block.direction = 'left';
-				}
+				'up': () => --block.x,
+				'down': () => ++block.x,
+				'left': () => --block.y,
+				'right': () => ++block.y
 			})[block.direction]();
 		}
+
+		const { x, y } = snake.blocks[0];
+
+		if(x === 0 || x === canvasBox || y === 0 || y === canvasBox)
+			snakes.splice(snake, 1);
 	}
 
 	io.emit('snakes', snakes);

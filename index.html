@@ -5,7 +5,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
 		<script>
-		const socket = io(`${location.origin || 'localhost'}:3055`);
+		const socket = io('http://localhost:3055');
 		const canvas = document.getElementById("canvas");
 
 		const canvasSize = canvas.width = canvas.height = 500;
@@ -35,7 +35,11 @@
 
 			for(const snake of snakes) {
 				for(const block of snake.blocks) {
-					grid[block.x][block.y] = snake.local == true ? userSnakeColor : snakeColor;
+					if(snake.local === true) {
+						grid[block.x][block.y] = snake.blocks.indexOf(block) === 0 ? 'fff': userSnakeColor;
+					} else {
+						grid[block.x][block.y] = snakeColor;
+					}
 				}
 			}
 
@@ -73,6 +77,8 @@
 		});
 
 		socket.on('snakes', snakes => {
+			//console.table(snakes[0].blocks);
+
 			for(const snake of snakes) {
 				if(snake.id === snakeId)
 					snake.local = true;
