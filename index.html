@@ -5,7 +5,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
 		<script>
-		const socket = io(`${location.origin}:3055`);
+		const socket = io(`${location.origin || 'localhost'}:3055`);
 		const canvas = document.getElementById("canvas");
 
 		const canvasSize = canvas.width = canvas.height = 500;
