@@ -54,7 +54,7 @@ setInterval(() => {
 
 			const { x, y } = entity.blocks[0];
 
-			if(x === 0 || x >= canvasBox || y === 0 || y >= canvasBox) {
+			if(x === -1 || x >= canvasBox || y === -1 || y >= canvasBox) {
 				entities.delete(entity);
 				entities.add(...entity.toFood());
 			}
@@ -90,18 +90,23 @@ setInterval(() => {
 				continue;
 			}
 
-			if(a.blocks.length > b.blocks.length) {
-				console.log('Snake a ate b');
+			const aHead = a.blocks[0];
+			const bHead = a.blocks[1];
+
+			if(b.blocks.slice(1).some(block => block.x === aHead.x && block.y === aHead.y)) {
+				// snake a is bigger
+				entities.delete(a);
+				entities.add(...a.toFood());
+
+				continue;
+			}
+
+			if(a.blocks.slice(1).some(block => block.x === bHead.x && block.y === bHead.y)) {
 				// snake a is bigger
 				entities.delete(b);
 				entities.add(...b.toFood());
-			}
 
-			if(a.blocks.length < b.blocks.length) {
-				console.log('Snake b ate a');
-				// snake b is bigger
-				entites.delete(a);
-				entites.add(...a.toFood());
+				continue;
 			}
 		}
 	}
