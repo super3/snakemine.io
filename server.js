@@ -1,10 +1,15 @@
 const io = require('socket.io')(3055);
 
 const Snake = require('./lib/Snake');
+const Food = require('./lib/Food');
 const detectCollisions = require('./lib/detectCollisions');
 
 const entities = new Set();
-let id = 0;
+
+entities.add(new Food({
+	x: 10,
+	y: 10
+}));
 
 io.on('connection', socket => {
 	const snake = new Snake();
@@ -26,7 +31,9 @@ io.on('connection', socket => {
 const fps = 3.5;
 
 setInterval(() => {
-	const canvasBox = 24;
+	const start = Date.now();
+
+	const canvasBox = 25;
 
 	for(const entity of entities) {
 		if(entity.type === 'snake') {
@@ -57,22 +64,29 @@ setInterval(() => {
 	for(const [ a, b ] of detectCollisions(entities)) {
 		if(!(entities.has(a) && entities.has(b))) {
 			// entities may have been deleted
-			return;
+			continue;
 		}
 
 		if(a.type === 'food' && b.type === 'food') {
-			return;
+			continue;
+		}
+
+		if((a.type === 'snake' && b.type === 'food') || (a.type === 'food' || b.type === 'snake')) {
+			const [ snake, food ] = a.type === 'snake' ? [ a, b ] : [ b, a ];
+
+			snake.appendBlock();
+			entities.delete(food);
 		}
 
 		if(a.type === 'snake' && b.type === 'snake') {
 			if(a === b) {
 				// snake crossing itself
-				return;
+				continue;
 			}
 
 			if(a.blocks.length === b.blocks.length) {
 				// snakes of equal length
-				return;
+				continue;
 			}
 
 			if(a.blocks.length > b.blocks.length) {
@@ -88,6 +102,8 @@ setInterval(() => {
 			}
 		}
 	}
+
+	console.log(Date.now() - start);
 
 	io.emit('entities', [ ...entities ]);
 }, 1000 / fps);
