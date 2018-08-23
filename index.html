@@ -19,8 +19,9 @@
 		const foregroundColor = 'AAD751';
 		const snakeColor = '4876EC';
 		const userSnakeColor = '222';
+		const foodColor = 'CCC';
 
-		function buildGrid(snakes) {
+		function buildGrid(entities) {
 			const grid = [];
 
 			context.clearRect(0, 0, canvas.width, canvas.height);
@@ -33,13 +34,21 @@
 				}
 			}
 
-			for(const snake of snakes) {
-				for(const block of snake.blocks) {
-					if(snake.local === true) {
-						grid[block.x][block.y] = snake.blocks.indexOf(block) === 0 ? 'fff': userSnakeColor;
-					} else {
-						grid[block.x][block.y] = snakeColor;
+			for(const entity of entities) {
+				console.log(entity);
+
+				if(entity.type === 'snake') {
+					for(const block of entity.blocks) {
+						if(entity.local === true) {
+							grid[block.x][block.y] = entity.blocks.indexOf(block) === 0 ? 'fff': userSnakeColor;
+						} else {
+							grid[block.x][block.y] = snakeColor;
+						}
 					}
+				}
+
+				if(entity.type === 'food') {
+					grid[entity.x][entity.y] = foodColor;
 				}
 			}
 
@@ -76,7 +85,7 @@
 			snakeId = _snakeId;
 		});
 
-		socket.on('snakes', snakes => {
+		socket.on('entities', snakes => {
 			//console.table(snakes[0].blocks);
 
 			for(const snake of snakes) {
