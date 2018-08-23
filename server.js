@@ -28,7 +28,7 @@ io.on('connection', socket => {
 	});
 });
 
-const fps = 3.5;
+const fps = 4;
 
 setInterval(() => {
 	const start = Date.now();
@@ -71,8 +71,9 @@ setInterval(() => {
 			continue;
 		}
 
-		if((a.type === 'snake' && b.type === 'food') || (a.type === 'food' || b.type === 'snake')) {
+		if((a.type === 'snake' && b.type === 'food') || (a.type === 'food' && b.type === 'snake')) {
 			const [ snake, food ] = a.type === 'snake' ? [ a, b ] : [ b, a ];
+			console.log('sdfsd');
 
 			snake.appendBlock();
 			entities.delete(food);
@@ -90,12 +91,14 @@ setInterval(() => {
 			}
 
 			if(a.blocks.length > b.blocks.length) {
+				console.log('Snake a ate b');
 				// snake a is bigger
 				entities.delete(b);
 				entities.add(...b.toFood());
 			}
 
 			if(a.blocks.length < b.blocks.length) {
+				console.log('Snake b ate a');
 				// snake b is bigger
 				entites.delete(a);
 				entites.add(...a.toFood());
