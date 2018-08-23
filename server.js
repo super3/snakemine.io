@@ -38,7 +38,7 @@ setInterval(() => {
 	for(const entity of entities) {
 		if(entity.type === 'snake') {
 			if(++entity.counter % 5 === 0) {
-				entity.appendBlock();
+				// entity.appendBlock();
 			}
 
 			entity.shiftState();
@@ -91,7 +91,7 @@ setInterval(() => {
 			}
 
 			const aHead = a.blocks[0];
-			const bHead = a.blocks[1];
+			const bHead = b.blocks[0];
 
 			if(b.blocks.slice(1).some(block => block.x === aHead.x && block.y === aHead.y)) {
 				// snake a is bigger
@@ -104,7 +104,10 @@ setInterval(() => {
 			if(a.blocks.slice(1).some(block => block.x === bHead.x && block.y === bHead.y)) {
 				// snake a is bigger
 				entities.delete(b);
-				entities.add(...b.toFood());
+
+				for(const food of b.toFood()) {
+					entities.add(food);
+				}
 
 				continue;
 			}
