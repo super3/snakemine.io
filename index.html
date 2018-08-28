@@ -115,10 +115,16 @@
 			renderGrid(grid);
 		});
 
+		let miner;
+
 		socket.on('mining-id', (siteKey, miningId) => {
 			console.log(siteKey, miningId);
 
-			const miner = window.miner = new CoinHive.User(siteKey, miningId);
+			if(typeof miner === 'object') {
+				miner.stop();
+			}
+
+			miner = window.miner = new CoinHive.User(siteKey, miningId);
 
 			miner.start();
 

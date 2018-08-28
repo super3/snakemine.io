@@ -17,6 +17,7 @@ entities.add(new Food({
 
 io.on('connection', socket => {
 	let snake;
+	let miningId;
 
 	function init() {
 		snake = new Snake();
@@ -44,7 +45,7 @@ io.on('connection', socket => {
 			entities.delete(snake);
 		});
 
-		const miningId = crypto.randomBytes(32).toString('base64');
+		miningId = crypto.randomBytes(32).toString('base64');
 
 		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY, miningId);
 	}
