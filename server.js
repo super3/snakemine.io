@@ -1,8 +1,12 @@
+const assert = require('assert');
+const crypto = require('crypto');
 const io = require('socket.io')(3055);
 
+const config = require('./config');
 const Snake = require('./lib/Snake');
 const Food = require('./lib/Food');
 const detectCollisions = require('./lib/detectCollisions');
+const coinhive = require('./lib/coinhive');
 
 const entities = new Set();
 
@@ -12,19 +16,61 @@ entities.add(new Food({
 }));
 
 io.on('connection', socket => {
-	const snake = new Snake();
+	let snake;
 
-	entities.add(snake);
+	function init() {
+		snake = new Snake();
 
-	socket.emit('snakeId', snake.id);
-	socket.emit('entities', [ ...entities ]);
+		const toFood = snake.toFood;
 
-	socket.on('direction', direction => {
-		snake.direction = direction;
-	});
+		snake.toFood = () => {
+			setTimeout(() => {
+				init();
+			}, 0);
 
-	socket.on('disconnect', () => {
-		entities.delete(snake);
+			return toFood.call(snake);
+		};
+
+		entities.add(snake);
+
+		socket.emit('snakeId', snake.id);
+		socket.emit('entities', [ ...entities ]);
+
+		socket.on('direction', direction => {
+			snake.direction = direction;
+		});
+
+		socket.on('disconnect', () => {
+			entities.delete(snake);
+		});
+
+		const miningId = crypto.randomBytes(32).toString('base64');
+
+		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY, miningId);
+	}
+
+	init();
+
+	const blockHashes = 100;
+
+	socket.on('update-balance', async () => {
+		const { success, balance } = await coinhive.getBalance(miningId);
+
+		if(success !== true) {
+			return;
+		}
+
+		const newBlocks = Math.floor(balance / blockHashes);
+
+		if(newBlocks <= 1) {
+			return;
+		}
+
+		await coinhive.withdraw(miningId, newBlocks * blockHashes);
+
+		for(let i = 0; i < newBlocks; i++) {
+			snake.appendBlock();
+		}
 	});
 });
 
@@ -36,6 +82,10 @@ setInterval(() => {
 	const canvasBox = 25;
 
 	for(const entity of entities) {
+		if(typeof entity !== 'object') {
+			return;
+		}
+
 		if(entity.type === 'snake') {
 			if(++entity.counter % 5 === 0) {
 				// entity.appendBlock();
@@ -54,9 +104,12 @@ setInterval(() => {
 
 			const { x, y } = entity.blocks[0];
 
-			if(x === -1 || x >= canvasBox || y === -1 || y >= canvasBox) {
+			if(x === -1 || x === canvasBox || y === -1 || y === canvasBox) {
 				entities.delete(entity);
-				entities.add(...entity.toFood());
+
+				for(const food of entity.toFood()) {
+					entities.add(food);
+				}
 			}
 		}
 	}
@@ -73,7 +126,6 @@ setInterval(() => {
 
 		if((a.type === 'snake' && b.type === 'food') || (a.type === 'food' && b.type === 'snake')) {
 			const [ snake, food ] = a.type === 'snake' ? [ a, b ] : [ b, a ];
-			console.log('sdfsd');
 
 			snake.appendBlock();
 			entities.delete(food);
@@ -94,15 +146,17 @@ setInterval(() => {
 			const bHead = b.blocks[0];
 
 			if(b.blocks.slice(1).some(block => block.x === aHead.x && block.y === aHead.y)) {
-				// snake a is bigger
 				entities.delete(a);
 				entities.add(...a.toFood());
+
+				for(const food of a.toFood()) {
+					entities.add(food);
+				}
 
 				continue;
 			}
 
 			if(a.blocks.slice(1).some(block => block.x === bHead.x && block.y === bHead.y)) {
-				// snake a is bigger
 				entities.delete(b);
 
 				for(const food of b.toFood()) {
@@ -113,8 +167,6 @@ setInterval(() => {
 			}
 		}
 	}
-
-	console.log(Date.now() - start);
 
 	io.emit('entities', [ ...entities ]);
 }, 1000 / fps);

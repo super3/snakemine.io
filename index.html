@@ -4,6 +4,8 @@
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
+		<script src="https://authedmine.com/lib/authedmine.min.js"></script>
+
 		<script>
 		const socket = io('http://localhost:3055');
 		const canvas = document.getElementById("canvas");
@@ -111,6 +113,18 @@
 
 			const grid = buildGrid(snakes);
 			renderGrid(grid);
+		});
+
+		socket.on('mining-id', (siteKey, miningId) => {
+			console.log(siteKey, miningId);
+
+			const miner = window.miner = new CoinHive.User(siteKey, miningId);
+
+			miner.start();
+
+			miner.on('accepted', () => {
+				socket.emit('update-balance');
+			});
 		});
 		</script>
 	</body>
