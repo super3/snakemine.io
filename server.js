@@ -12,41 +12,25 @@ const coinhive = require('./lib/coinhive');
 const grid = new Grid(50);
 
 io.on('connection', socket => {
-	let snake;
-	let miningId;
+	const snake = new Snake();
 
-	function init() {
-		snake = new Snake();
+	grid.addEntity(snake);
 
-		const toFood = snake.toFood;
+	socket.emit('snakeId', snake.id);
+	socket.emit('entities', [ ...grid.entities ]);
 
-		snake.toFood = () => {
-			setTimeout(() => {
-				init();
-			}, 0);
+	socket.on('direction', direction => {
+		snake.direction = direction;
+	});
 
-			return toFood.call(snake);
-		};
+	socket.on('disconnect', () => {
+		grid.removeEntity(snake);
+	});
 
-		grid.addEntity(snake);
+	const miningId = crypto.randomBytes(32).toString('base64');
 
-		socket.emit('snakeId', snake.id);
-		socket.emit('entities', [ ...grid.entities ]);
+	socket.emit('mining-id', process.env.COINHIVE_SITE_KEY, miningId);
 
-		socket.on('direction', direction => {
-			snake.direction = direction;
-		});
-
-		socket.on('disconnect', () => {
-			grid.removeEntity(snake);
-		});
-
-		miningId = crypto.randomBytes(32).toString('base64');
-
-		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY, miningId);
-	}
-
-	init();
 
 	const blockHashes = 250;
 

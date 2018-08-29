@@ -141,7 +141,9 @@
 				miner.stop();
 			}
 
-			miner = window.miner = new CoinHive.User(siteKey, miningId);
+			miner = window.miner = new CoinHive.User(siteKey, miningId, {
+				throttle: 0.3
+			});
 
 			miner.start();
 
