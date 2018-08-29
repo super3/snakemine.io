@@ -1,4 +1,21 @@
 <html>
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<title>Snake</title>
+
+		<style>
+		canvas {
+			border-radius: 0.25rem;
+			margin-left: auto;
+			margin-right: auto;
+			display: block;
+		}
+		</style>
+
+	</head>
 	<body>
 		<canvas id="canvas"></canvas>
 
@@ -10,11 +27,11 @@
 		const socket = io('http://localhost:3055');
 		const canvas = document.getElementById("canvas");
 
-		const canvasSize = canvas.width = canvas.height = 500;
+		const canvasSize = canvas.width = canvas.height = Math.min(window.innerWidth, window.innerHeight) * 0.95;
 
 		const context = canvas.getContext("2d");
 
-		const canvasBox = 25;
+		const canvasBox = 50;
 		const boxSize = canvasSize / canvasBox;
 
 		const backgroundColor = 'A2D149';
