@@ -1,6 +1,9 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const io = require('socket.io')(3055);
+const Redis = require('ioredis');
+
+const redis = new Redis();
 
 const config = require('./config');
 const Grid = require('./lib/Grid');
@@ -13,7 +16,7 @@ const grid = new Grid(50);
 
 io.on('connection', socket => {
 
-	socket.on('init', privateKey => {
+	socket.on('init', async privateKey => {
 		const publicKey = (() => {
 			const hash = crypto.createHash('sha256');
 
@@ -21,6 +24,12 @@ io.on('connection', socket => {
 
 			return hash.digest('hex');
 		})();
+
+		const blockHashes = 250;
+
+		const emitBalance = async () => socket.emit('balance', await redis.get(`balance:${publicKey}`) / blockHashes || 0);
+
+		await emitBalance();
 
 		console.log({ privateKey, publicKey });
 
@@ -41,7 +50,27 @@ io.on('connection', socket => {
 
 		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY);
 
-		const blockHashes = 250;
+		socket.on('add-block', async () => {
+			if(await redis.get(`balance:${publicKey}`) < blockHashes) {
+				return;
+			}
+
+			await redis.decrby(`balance:${publicKey}`, blockHashes);
+			await emitBalance();
+
+			snake.appendBlock();
+		});
+
+		socket.on('remove-block', async () => {
+			if(snake.blocks.length <= 1) {
+				return;
+			}
+
+			snake.blocks.splice(snake.blocks.length - 1, 1);
+
+			await redis.incrby(`balance:${publicKey}`, blockHashes);
+			await emitBalance();
+		});
 
 		socket.on('update-balance', async () => {
 			const { success, balance } = await coinhive.getBalance(publicKey);
@@ -49,15 +78,17 @@ io.on('connection', socket => {
 			if(success !== true)
 				return;
 
-			const newBlocks = Math.floor(balance / blockHashes);
+			// const newBlocks = Math.floor(balance / blockHashes);
 
-			if(newBlocks <= 1)
-				return;
+			// if(newBlocks <= 1)
+				// return;
 
-			await coinhive.withdraw(miningId, newBlocks * blockHashes);
+			await coinhive.withdraw(publicKey, balance);
 
-			for(let i = 0; i < newBlocks; i++)
-				snake.appendBlock();
+			await redis.incrby(`balance:${publicKey}`, balance);
+			await emitBalance();
+			// for(let i = 0; i < newBlocks; i++)
+				// snake.appendBlock();
 		});
 	});
 

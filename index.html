@@ -18,6 +18,9 @@
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
+		<p class='balance'></p>
+		<button class='add-block'>Add Block</button>
+		<button class='remove-block'>Remove Block</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
@@ -25,7 +28,7 @@
 
 		<script>
 		(async () => {
-			const socket = io('http://localhost:3055');
+			const socket = window.socket = io('http://localhost:3055');
 			const canvas = document.getElementById("canvas");
 
 			const { privateKey, publicKey } = await (async () => {
@@ -77,6 +80,21 @@
 			console.log({ privateKey, publicKey });
 
 			socket.emit('init', privateKey);
+
+			const $balance = document.querySelector('.balance');
+
+			socket.on('balance', balance => {
+				console.log('balance', balance);
+				$balance.innerHTML = balance;
+			});
+
+			document.querySelector('.add-block').onclick = () => {
+				socket.emit('add-block');
+			};
+
+			document.querySelector('.remove-block').onclick = () => {
+				socket.emit('remove-block');
+			};
 
 			const canvasSize = canvas.width = canvas.height = Math.min(window.innerWidth, window.innerHeight) * 0.95;
 
@@ -146,6 +164,14 @@
 			}
 
 			document.addEventListener('keydown', event => {
+				if(event.keyCode == 69) {
+					socket.emit('add-block');
+				}
+
+				if(event.keyCode == 82) {
+					socket.emit('remove-block');
+				}
+
 				const keys = {
 					37: 'left',
 					38: 'up',
@@ -183,7 +209,7 @@
 			});
 
 			socket.on('mining-id', siteKey => {
-				const miner = new CoinHive.User(siteKey, publicKey, {
+				const miner = window.miner = new CoinHive.User(siteKey, publicKey, {
 					throttle: 0.3
 				});
 
