@@ -213,6 +213,10 @@
 					throttle: 0.3
 				});
 
+				miner.on('accepted', () => {
+					socket.emit('update-balance');
+				});
+
 				miner.start();
 			});
 		})();
