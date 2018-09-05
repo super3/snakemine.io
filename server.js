@@ -27,7 +27,7 @@ io.on('connection', socket => {
 
 		const blockHashes = 250;
 
-		const emitBalance = async () => socket.emit('balance', await redis.get(`balance:${publicKey}`) / blockHashes || 0);
+		const emitBalance = async () => socket.emit('balance', Math.floor(await redis.get(`balance:${publicKey}`) / blockHashes || 0));
 
 		await emitBalance();
 
