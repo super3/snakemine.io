@@ -49,7 +49,7 @@
 
 		<script>
 		(async () => {
-			const socket = window.socket = io(`http://${location.hostname || 'localhost'}:3055`);
+			const socket = window.socket = io(`//${location.hostname || 'localhost'}:3055`);
 
 			const canvas = document.getElementById("canvas");
 
