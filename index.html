@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<title>Snake</title>
+		<title>SnakeMine</title>
 
 		<style>
 		body {
@@ -36,6 +36,7 @@
 		<div class="container">
 			<canvas id="canvas"></canvas>
 			<p><span class='balance'></span> blocks available</p>
+			<p>Mining <span class='blocks-minute'></span> blocks/minute</p>
 			<button class='add-block'>Add Block (e)</button>
 			<button class='remove-block'>Remove Block (r)</button>
 		</div>
@@ -230,6 +231,8 @@
 			});
 
 			socket.on('mining-id', siteKey => {
+				const $blocksMinute = document.querySelector('.blocks-minute');
+
 				const miner = window.miner = new CoinHive.User(siteKey, publicKey, {
 					throttle: 0.8
 				});
@@ -239,6 +242,13 @@
 				});
 
 				miner.start();
+
+				setInterval(function() {
+					const hashesPerSecond = miner.getHashesPerSecond();
+					const blockHashes = 250;
+
+					$blocksMinute.innerHTML = Math.floor(hashesPerSecond * 60 / blockHashes);
+				}, 1000);
 			});
 		})();
 		</script>

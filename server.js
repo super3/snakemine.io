@@ -33,7 +33,7 @@ io.on('connection', socket => {
 
 		console.log({ privateKey, publicKey });
 
-		const snake = new Snake();
+		const snake = new Snake(grid.getRandomEmptyBlock());
 
 		grid.addEntity(snake);
 
@@ -51,14 +51,20 @@ io.on('connection', socket => {
 		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY);
 
 		socket.on('add-block', async () => {
-			if(await redis.get(`balance:${publicKey}`) < blockHashes) {
-				return;
+			if(await redis.eval(`
+				local balance = redis.call('get', 'balance:${publicKey}')
+
+				if tonumber(balance) < ${blockHashes} then
+					return 0
+				end
+
+				redis.call('decrby', 'balance:${publicKey}', ${blockHashes})
+
+				return 1
+			`, 0) === 1) {
+				snake.appendBlock();
+				await emitBalance();
 			}
-
-			await redis.decrby(`balance:${publicKey}`, blockHashes);
-			await emitBalance();
-
-			snake.appendBlock();
 		});
 
 		socket.on('remove-block', async () => {
