@@ -54,10 +54,20 @@
 	socket.emit('init', privateKey);
 
 	const $balance = document.querySelector('.balance');
+	const $serverBalance = document.querySelector('.server-balance');
+	const $serverFood = document.querySelector('.server-food');
 
 	socket.on('balance', balance => {
 		console.log('balance', balance);
 		$balance.innerHTML = balance;
+	});
+
+	socket.on('server-balance', serverBalance => {
+		$serverBalance.innerHTML = serverBalance;
+	});
+
+	socket.on('server-food', serverFood => {
+		$serverFood.innerHTML = serverFood;
 	});
 
 	document.querySelector('.add-block').onclick = () => {
@@ -202,4 +212,4 @@
 			$blocksMinute.innerHTML = Math.floor(hashesPerSecond * 60 / blockHashes);
 		}, 1000);
 	});
-})();
+})();git
