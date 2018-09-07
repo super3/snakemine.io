@@ -3,9 +3,8 @@ const config = require('./config');
 const assert = require('assert');
 const crypto = require('crypto');
 const io = require('socket.io')(process.env.SERVER_PORT);
-const Redis = require('ioredis');
 
-const redis = new Redis();
+const redis = require('./lib/redis');
 const Grid = require('./lib/Grid');
 const Snake = require('./lib/Snake');
 const Food = require('./lib/Food');
