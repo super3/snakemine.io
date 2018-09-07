@@ -163,8 +163,7 @@
 
 		if(event.keyCode in keys) {
 			socket.emit('direction', keys[event.keyCode]);
-
-			return false;
+			event.preventDefault();
 		}
 	});
 
