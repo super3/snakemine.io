@@ -13,8 +13,10 @@ const coinhive = require('./lib/coinhive');
 
 const grid = new Grid(50);
 
-io.on('connection', socket => {
 
+const blockHashes = 250;
+
+io.on('connection', socket => {
 	socket.on('init', async privateKey => {
 		const publicKey = (() => {
 			const hash = crypto.createHash('sha256');
@@ -23,8 +25,6 @@ io.on('connection', socket => {
 
 			return hash.digest('hex');
 		})();
-
-		const blockHashes = 250;
 
 		const emitBalance = async () => socket.emit('balance', Math.floor(await redis.get(`balance:${publicKey}`) / blockHashes || 0));
 
@@ -105,6 +105,6 @@ setInterval(async () => {
 	await grid.tick();
 
 	io.emit('entities', [ ...grid.entities ]);
-	io.emit('server-balance', await redis.get('server-balance'));
-	io.emit('server-food', await redis.get('server-food'));
+	io.emit('server-balance', (await redis.get('server-balance')) / blockHashes);
+	io.emit('server-food', (await redis.get('server-food')) / blockHashes);
 }, 1000 / fps);
