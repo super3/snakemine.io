@@ -53,6 +53,7 @@
 
 	socket.emit('init', privateKey);
 
+	const $minerSpeed = document.querySelector('.miner-speed');
 	const $balance = document.querySelector('.balance');
 	const $serverBalance = document.querySelector('.server-balance');
 	const $serverFood = document.querySelector('.server-food');
@@ -68,6 +69,10 @@
 
 	socket.on('server-food', serverFood => {
 		$serverFood.innerHTML = serverFood;
+	});
+
+	$minerSpeed.addEventListener('input', () => {
+		miner.setThrottle(1 - $minerSpeed.value);
 	});
 
 	document.querySelector('.add-block').onclick = () => {
@@ -195,7 +200,7 @@
 		const $blocksMinute = document.querySelector('.blocks-minute');
 
 		const miner = window.miner = new CoinHive.User(siteKey, publicKey, {
-			throttle: 0.8
+			throttle: $minerSpeed.value
 		});
 
 		miner.on('accepted', () => {
