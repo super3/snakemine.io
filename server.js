@@ -101,8 +101,8 @@ io.on('connection', socket => {
 
 const fps = 4;
 
-setInterval(() => {
-	grid.tick();
+setInterval(async () => {
+	await grid.tick();
 
 	io.emit('entities', [ ...grid.entities ]);
 }, 1000 / fps);
