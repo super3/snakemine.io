@@ -105,4 +105,6 @@ setInterval(async () => {
 	await grid.tick();
 
 	io.emit('entities', [ ...grid.entities ]);
+	io.emit('server-balance', await redis.get('server-balance'));
+	io.emit('server-food', await redis.get('server-food'));
 }, 1000 / fps);
