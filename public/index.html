@@ -52,8 +52,8 @@
         <div class="row">
             <div class="col-md-4 order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted">Info</span>
-            <span class="badge badge-secondary badge-pill">3</span>
+            <span class="text-muted">Stats</span>
+            <!--<span class="badge badge-secondary badge-pill">3</span>-->
           </h4>
                 <ul class="list-group mb-3">
                     <li class="list-group-item d-flex justify-content-between lh-condensed bg-light">
@@ -85,10 +85,11 @@
                         <span class="text-muted"><span class='server-food'></span></span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between bg-light">
-                        <form>
+                        <form style="width: 100%">
                             <div class="form-group">
-                                <h6 class="my-0">Mining Speed</h6>
-                                <input type="range" class="form-control-range miner-speed" min="0" max="1" step="0.01" value="0.5">
+                                <h6 class="my-0">Mining Speed</h6><br/>
+                                <input type="range" class="form-control-range miner-speed"
+                                min="0" max="1" step="0.01" value="0.5">
                             </div>
                         </form>
                     </li>
@@ -96,6 +97,13 @@
                         <span><a href="https://zfaucet.typeform.com/to/d5sM1i">Give feedback</a></span>
                     </li>
                 </ul>
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted">Controls</span>
+                </h4>
+                <div>
+                  <button class="btn btn-primary add-block">Add Block (e)</button>
+                  <button class="btn btn-primary remove-block">Remove Block (r)</button>
+                </div>
                 <!--<form class="card p-2">
                   <div class="input-group">
                     <input type="text" class="form-control" placeholder="Promo code">
@@ -110,11 +118,6 @@
                 <div>
                     <canvas id="canvas"></canvas>
                 </div>
-                <form class="needs-validation" novalidate>
-                    <hr class="mb-4">
-                    <button class="btn btn-primary add-block">Add Block (e)</button>
-                    <button class="btn btn-primary remove-block">Remove Block (r)</button>
-                </form>
             </div>
         </div>
 
