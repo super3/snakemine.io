@@ -43,10 +43,6 @@
         <div class="py-5 text-center">
             <!--<img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">-->
             <h2>SnakeMine.IO</h2>
-            <p class="lead">
-               Control your snake with the arrow keys. You can eat food, kill other snakes
-               by letting them run into your body, but don't run into the wall or you will die!
-            </p>
         </div>
 
         <div class="row">
@@ -72,14 +68,14 @@
                     </li>
                     <li class="list-group-item d-flex justify-content-between lh-condensed bg-light">
                         <div>
-                            <h6 class="my-0">Server Balance</h6>
+                            <h6 class="my-0">Server balance</h6>
                             <small class="text-muted">Blocks that the server owns.</small>
                         </div>
                         <span class="text-muted"><span class='server-balance'></span></span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <div>
-                            <h6 class="my-0">Server Food</h6>
+                            <h6 class="my-0">Server food</h6>
                             <small class="text-muted">Blocks due to be redistributed as food.</small>
                         </div>
                         <span class="text-muted"><span class='server-food'></span></span>
@@ -87,7 +83,7 @@
                     <li class="list-group-item d-flex justify-content-between bg-light">
                         <form style="width: 100%">
                             <div class="form-group">
-                                <h6 class="my-0">Mining Speed</h6><br/>
+                                <h6 class="my-0">Mining speed</h6><br/>
                                 <input type="range" class="form-control-range miner-speed"
                                 min="0" max="1" step="0.01" value="0.5">
                             </div>
@@ -116,7 +112,23 @@
             <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">Play Now</h4>
                 <div>
+                    <!--<div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">SnakeMine.IO</h5>
+                        <p class="card-text" style="text-align:justify;">
+                            Control your snake with the arrow keys. You can eat food,
+                            kill other snakes by letting them run into your body,
+                            but don't run into the wall or you will die! <br/><br/>
+                            During gameplay your excess CPU power will be used to mine,
+                            and you will receive food blocks which you can add or remove
+                            from your snake at any time. In the future, we will add the
+                            ability to cash out these blocks into cryptocurrency.
+                          </p>
+                          <a href="#" class="btn btn-primary">Play</a>
+                        </div>
+                      </div><br/>-->
                     <canvas id="canvas"></canvas>
+
                 </div>
             </div>
         </div>
@@ -134,6 +146,9 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+
     <script src="https://rawgit.com/vibornoff/webcrypto-shim/master/webcrypto-shim.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
