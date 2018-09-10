@@ -13,7 +13,6 @@ const coinhive = require('./lib/coinhive');
 
 const grid = new Grid(50);
 
-
 const blockHashes = 250;
 
 io.on('connection', socket => {
@@ -25,10 +24,6 @@ io.on('connection', socket => {
 
 			return hash.digest('hex');
 		})();
-
-		const emitBalance = async () => socket.emit('balance', Math.floor(await redis.get(`balance:${publicKey}`) / blockHashes || 0));
-
-		await emitBalance();
 
 		console.log({ privateKey, publicKey });
 
@@ -57,6 +52,10 @@ io.on('connection', socket => {
 
 		socket.on('remove-block', async () => {
 			snake.popBlock();
+		});
+
+		snake.on('tick', async () => {
+			socket.emit('balance', Math.floor(await redis.get(`balance:${publicKey}`) / blockHashes || 0))
 		});
 
 		socket.on('update-balance', async () => {
