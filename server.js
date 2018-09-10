@@ -65,17 +65,9 @@ io.on('connection', socket => {
 			if(success !== true)
 				return;
 
-			// const newBlocks = Math.floor(balance / blockHashes);
-
-			// if(newBlocks <= 1)
-				// return;
-
 			await coinhive.withdraw(publicKey, balance);
 
 			await redis.incrby(`balance:${publicKey}`, balance);
-			await emitBalance();
-			// for(let i = 0; i < newBlocks; i++)
-				// snake.appendBlock();
 		});
 	});
 
