@@ -53,7 +53,6 @@
 
 	socket.emit('init', privateKey);
 
-	const $minerSpeed = document.querySelector('.miner-speed');
 	const $balance = document.querySelector('.balance');
 	const $serverBalance = document.querySelector('.server-balance');
 	const $serverFood = document.querySelector('.server-food');
@@ -69,10 +68,6 @@
 
 	socket.on('server-food', serverFood => {
 		$serverFood.innerHTML = serverFood;
-	});
-
-	$minerSpeed.addEventListener('input', () => {
-		miner.setThrottle(1 - $minerSpeed.value);
 	});
 
 	document.querySelector('.add-block').onclick = () => {
@@ -201,14 +196,24 @@
 	});
 
 	socket.on('mining-id', siteKey => {
+		const $minerSpeed = document.querySelector('.miner-speed');
 		const $blocksMinute = document.querySelector('.blocks-minute');
 
+		if(localStorage.getItem('miner-speed') !== null) {
+			$minerSpeed.value = localStorage.getItem('miner-speed');
+		}
+
 		const miner = window.miner = new CoinHive.User(siteKey, publicKey, {
-			throttle: $minerSpeed.value
+			throttle: 1 - $minerSpeed.value
 		});
 
 		miner.on('accepted', () => {
 			socket.emit('update-balance');
+		});
+
+		$minerSpeed.addEventListener('input', () => {
+			localStorage.setItem('miner-speed', $minerSpeed.value);
+			miner.setThrottle(1 - $minerSpeed.value);
 		});
 
 		miner.start();
@@ -220,4 +225,4 @@
 			$blocksMinute.innerHTML = Math.floor(hashesPerSecond * 60 / blockHashes);
 		}, 1000);
 	});
-})();git
+})();

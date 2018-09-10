@@ -34,6 +34,8 @@ io.on('connection', socket => {
 
 		const snake = new Snake(grid.getRandomEmptyBlock());
 
+		snake.publicKey = publicKey;
+
 		grid.addEntity(snake);
 
 		socket.emit('snakeId', snake.id);
@@ -50,31 +52,11 @@ io.on('connection', socket => {
 		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY);
 
 		socket.on('add-block', async () => {
-			if(await redis.eval(`
-				local balance = redis.call('get', 'balance:${publicKey}')
-
-				if tonumber(balance) < ${blockHashes} then
-					return 0
-				end
-
-				redis.call('decrby', 'balance:${publicKey}', ${blockHashes})
-
-				return 1
-			`, 0) === 1) {
-				snake.appendBlock();
-				await emitBalance();
-			}
+			snake.appendBlock();
 		});
 
 		socket.on('remove-block', async () => {
-			if(snake.blocks.length <= 1) {
-				return;
-			}
-
-			snake.blocks.splice(snake.blocks.length - 1, 1);
-
-			await redis.incrby(`balance:${publicKey}`, blockHashes);
-			await emitBalance();
+			snake.popBlock();
 		});
 
 		socket.on('update-balance', async () => {
@@ -99,7 +81,7 @@ io.on('connection', socket => {
 
 });
 
-const fps = 4;
+const fps = 5;
 
 setInterval(async () => {
 	await grid.tick();
