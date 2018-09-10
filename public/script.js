@@ -1,6 +1,10 @@
 (async () => {
 	const socket = window.socket = io(`//${location.hostname || 'localhost'}:3055`);
 
+	window.addEventListener("beforeunload", () => {
+		socket.close();
+	}, false);
+
 	const canvas = document.getElementById("canvas");
 
 	const { privateKey, publicKey } = await (async () => {
