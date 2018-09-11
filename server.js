@@ -47,7 +47,7 @@ io.on('connection', socket => {
 		socket.emit('mining-id', process.env.COINHIVE_SITE_KEY);
 
 		socket.on('add-block', async () => {
-			snake.appendBlock();
+			snake.appendBlockFromBalance();
 		});
 
 		socket.on('remove-block', async () => {
