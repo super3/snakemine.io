@@ -169,7 +169,7 @@
 				38: 'up',
 				39: 'right',
 				40: 'down',
-				87: 'up', // w
+				87: 'up',   // w
 				65: 'left', // a
 				83: 'down', // s
 				68: 'right' // d
