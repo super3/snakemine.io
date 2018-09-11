@@ -37,10 +37,12 @@ io.on('connection', socket => {
 		socket.emit('entities', [ ...grid.entities ]);
 
 		socket.on('direction', direction => {
+			snake.lastInput = Date.now();
 			snake.direction = direction;
 		});
 
-		socket.on('disconnect', () => {
+		socket.on('disconnect', async () => {
+			await snake.die();
 			grid.removeEntity(snake);
 		});
 
