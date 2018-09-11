@@ -1,9 +1,9 @@
 (() => {
+	const $playCard = document.querySelector(".play-card");
 	const $play = document.querySelector(".play");
 
 	$play.addEventListener('click', async () => {
-		$play.style.cssText = "display: none !important"
-"display: none !important";
+		$playCard.style.display = "none";
 
 		const socket = window.socket = io(`//${location.hostname || 'localhost'}:3055`);
 
