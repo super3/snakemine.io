@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/ovsoinc/snake#readme",
   "dependencies": {
+    "axios": "^0.18.0",
+    "debug": "^4.0.1",
     "dotenv": "^6.0.0",
     "ioredis": "^4.0.0",
     "request": "^2.88.0",

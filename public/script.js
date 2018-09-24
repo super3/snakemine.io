@@ -66,6 +66,7 @@
 		const $balance = document.querySelector('.balance');
 		const $serverBalance = document.querySelector('.server-balance');
 		const $serverFood = document.querySelector('.server-food');
+		const $withdrawZCash = document.querySelector('.withdraw-zcash');
 
 		socket.on('balance', balance => {
 			console.log('balance', balance);
@@ -86,6 +87,10 @@
 
 		document.querySelector('.remove-block').onclick = () => {
 			socket.emit('remove-block');
+		};
+
+		document.querySelector('.withdraw-zcash').onclick = () => {
+			socket.emit('withdraw-zcash');
 		};
 
 		const canvasSize = canvas.width = canvas.height = Math.min(window.innerWidth, window.innerHeight) * 0.75;
