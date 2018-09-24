@@ -73,9 +73,10 @@ io.on('connection', socket => {
 			await redis.incrby(`balance:${publicKey}`, balance);
 		});
 
-		socket.on('withdraw-zcash', async () => {	
+		socket.on('withdraw-zcash', async address => {
 			const hashes = await redis.getset(`balance:${publicKey}`, 0);
 
+			debug('address', address);
 			debug(`Withdrawing ${hashes} hashes`);
 
 			try {
@@ -101,8 +102,12 @@ io.on('connection', socket => {
 				debug('$ (ZEC)', zec);
 
 				await axios.get(`${process.env.ZFAUCET_URL}/api/external/withdraw`, {
-
-				})
+					params: {
+						key: process.env.ZFAUCET_PRIVATE_KEY,
+						address,
+						amount: zec
+					}
+				});
 			} catch(err) {
 				debug(err);
 				debug('Adding hashes back to balance');
