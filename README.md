@@ -1,4 +1,5 @@
 # [snakemine.io](https://snakemine.io)
+Snake with cryptocurrency mining.
 
 ## Requirements
 
