@@ -1,10 +1,15 @@
 const config = require('./config');
 
+const Koa = require('koa');
+const serve = require('koa-static');
 const debug = require('debug')('snake');
 const assert = require('assert');
 const crypto = require('crypto');
 const axios = require('axios');
-const io = require('socket.io')(process.env.SERVER_PORT);
+
+const app = new Koa();
+const server = require('http').createServer(app.callback());
+const io = require('socket.io')(server);
 
 const redis = require('./lib/redis');
 const Grid = require('./lib/Grid');
@@ -12,6 +17,9 @@ const Snake = require('./lib/Snake');
 const Food = require('./lib/Food');
 const detectCollisions = require('./lib/detectCollisions');
 const coinhive = require('./lib/coinhive');
+
+
+app.use(serve(`${__dirname}/public`));
 
 const grid = new Grid(50);
 
@@ -127,3 +135,5 @@ setInterval(async () => {
 	io.emit('server-balance', (await redis.get('server-balance')) / blockHashes);
 	io.emit('server-food', (await redis.get('server-food')) / blockHashes);
 }, 1000 / fps);
+
+server.listen(process.env.SERVER_PORT || 3000);
