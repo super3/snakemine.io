@@ -30,5 +30,9 @@ nano .env
 	BLOCK_HASHES=250
 
 ```
+redis-cli set server-food 500
+```
+
+```
 node server
 ```
