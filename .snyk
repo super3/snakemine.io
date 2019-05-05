@@ -6,3 +6,6 @@ patch:
   'npm:lodash:20180130':
     - koa-serve > lodash:
         patched: '2019-01-23T19:27:10.565Z'
+  SNYK-JS-AXIOS-174505:
+    - axios:
+        patched: '2019-05-05T23:09:12.670Z'
