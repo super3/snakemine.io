@@ -1,3 +1,6 @@
+| NOTE: The service we used for cryptocurrency mining (Coinhive) for this game shut down, so this no longer works. |
+| --- |
+
 # [snakemine.io](https://snakemine.io)
 Snake with cryptocurrency mining.
 
